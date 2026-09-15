@@ -39,12 +39,12 @@ export function useAppState() {
   // Detecta quando a meta líquida diária é batida para disparar celebração
   useEffect(() => {
     const day = todayKey();
-    const summary = summarizeDay(state.rides, day, state.dailyRecords[day]);
+    const summary = summarizeDay(state.rides, day, state.dailyRecords[day], state.metaDiaria);
     if (summary.metaBatida && !wasMetaBatidaRef.current) {
       setCelebrate(true);
     }
     wasMetaBatidaRef.current = summary.metaBatida;
-  }, [state.rides, state.dailyRecords]);
+  }, [state.rides, state.dailyRecords, state.metaDiaria]);
 
   const pushFeedback = useCallback((text: string, ok: boolean) => {
     setFeedback({ id: uid(), text, ok });
@@ -232,6 +232,22 @@ export function useAppState() {
 
   const dismissCelebration = useCallback(() => setCelebrate(false), []);
 
+  // Edição direta das metas — totalmente editáveis em tela
+  const setMetaDiaria = useCallback((valor: number) => {
+    setState((prev) => ({ ...prev, metaDiaria: valor }));
+  }, []);
+
+  const setMetaSemanal = useCallback((valor: number) => {
+    setState((prev) => ({ ...prev, metaSemanal: valor }));
+  }, []);
+
+  // Edição direta do total da reserva. Como a reserva exibida é
+  // base + guardado acumulado, editar o total ajusta a base para que
+  // o novo valor "pegue" imediatamente, sem mexer no histórico de 10%.
+  const setReservaTotal = useCallback((novoTotal: number) => {
+    setState((prev) => ({ ...prev, reservaBase: novoTotal - prev.reservaGuardada }));
+  }, []);
+
   return {
     state,
     feedback,
@@ -242,5 +258,8 @@ export function useAppState() {
     editRide,
     deleteRide,
     closeDay,
+    setMetaDiaria,
+    setMetaSemanal,
+    setReservaTotal,
   };
 }

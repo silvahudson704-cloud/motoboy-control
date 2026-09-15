@@ -1,10 +1,13 @@
 import { AppState } from "@/types";
-import { STORAGE_KEY } from "./constants";
+import { STORAGE_KEY, DEFAULT_RESERVA_BASE, DEFAULT_META_DIARIA, DEFAULT_META_SEMANAL } from "./constants";
 
 export const emptyState: AppState = {
   rides: [],
   dailyRecords: {},
+  reservaBase: DEFAULT_RESERVA_BASE,
   reservaGuardada: 0,
+  metaDiaria: DEFAULT_META_DIARIA,
+  metaSemanal: DEFAULT_META_SEMANAL,
   history: [],
 };
 
@@ -17,7 +20,10 @@ export function loadState(): AppState {
     return {
       rides: parsed.rides ?? [],
       dailyRecords: parsed.dailyRecords ?? {},
+      reservaBase: parsed.reservaBase ?? DEFAULT_RESERVA_BASE,
       reservaGuardada: parsed.reservaGuardada ?? 0,
+      metaDiaria: parsed.metaDiaria ?? DEFAULT_META_DIARIA,
+      metaSemanal: parsed.metaSemanal ?? DEFAULT_META_SEMANAL,
       history: parsed.history ?? [],
     };
   } catch (err) {

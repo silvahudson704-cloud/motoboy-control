@@ -5,16 +5,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        base: "#0B0F14",
-        surface: "#121821",
-        elevated: "#1B232D",
-        border: "#2A343F",
-        ink: "#F4F7FA",
-        muted: "#8B98A5",
-        visor: "#FFC530", // amarelo visor — cor de marca / ação primária
-        "visor-ink": "#171204",
-        paid: "#35D07F",
-        pending: "#FF8A3D",
+        base: "#0A0A0B", // preto grafite, alto contraste
+        surface: "#151517",
+        elevated: "#1E1E21",
+        border: "#2F2F33",
+        ink: "#FAFAFA",
+        muted: "#9A9AA0",
+        visor: "#FFD60A", // dourado/amarelo neon — cor de marca / ação primária
+        "visor-ink": "#1A1400",
+        paid: "#39E37B",
+        pending: "#FF9F3D",
         cost: "#FF5C5C",
       },
       fontFamily: {

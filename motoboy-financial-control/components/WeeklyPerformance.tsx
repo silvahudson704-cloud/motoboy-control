@@ -2,10 +2,16 @@
 
 import { Check, X } from "lucide-react";
 import { WeekSummary } from "@/lib/calculations";
-import { WEEK_DAY_LABELS, META_DIARIA, META_SEMANAL } from "@/lib/constants";
+import { WEEK_DAY_LABELS } from "@/lib/constants";
 import { formatCurrency, formatShortDate, todayKey } from "@/lib/dates";
 
-export function WeeklyPerformance({ week }: { week: WeekSummary }) {
+interface WeeklyPerformanceProps {
+  week: WeekSummary;
+  metaDiaria: number;
+  metaSemanal: number;
+}
+
+export function WeeklyPerformance({ week, metaDiaria, metaSemanal }: WeeklyPerformanceProps) {
   const today = todayKey();
 
   return (
@@ -17,7 +23,7 @@ export function WeeklyPerformance({ week }: { week: WeekSummary }) {
             week.metaSemanalBatida ? "text-paid" : "text-muted"
           }`}
         >
-          {formatCurrency(week.liquidoTotal)} / {formatCurrency(META_SEMANAL)}
+          {formatCurrency(week.liquidoTotal)} / {formatCurrency(metaSemanal)}
         </p>
       </div>
 
@@ -53,7 +59,7 @@ export function WeeklyPerformance({ week }: { week: WeekSummary }) {
       </ul>
 
       <p className="mt-2 text-[11px] text-muted">
-        Meta diária: {formatCurrency(META_DIARIA)} líquidos por dia trabalhado.
+        Meta diária: {formatCurrency(metaDiaria)} líquidos por dia trabalhado.
       </p>
     </div>
   );

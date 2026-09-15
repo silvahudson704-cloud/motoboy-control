@@ -28,7 +28,10 @@ export interface HistoryEntry {
 export interface AppState {
   rides: Ride[];
   dailyRecords: Record<string, DailyRecord>;
+  reservaBase: number; // valor base editável da reserva (padrão R$ 216,24)
   reservaGuardada: number; // soma acumulada de todos os 10% guardados (nunca reseta)
+  metaDiaria: number; // editável em tela, padrão R$ 200
+  metaSemanal: number; // editável em tela, padrão R$ 1.200
   history: HistoryEntry[];
 }
 

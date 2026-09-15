@@ -1,32 +1,43 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Send } from "lucide-react";
-import { QUICK_ACTIONS } from "@/lib/constants";
+import { Rocket } from "lucide-react";
+import { QUICK_ACTIONS, QuickAction } from "@/lib/constants";
 
 interface QuickEntryTerminalProps {
   onSubmit: (text: string) => void;
 }
 
+const kindClasses: Record<QuickAction["kind"], string> = {
+  value: "border-visor/40 bg-visor/10 text-visor",
+  status: "border-paid/40 bg-paid/10 text-paid",
+  cost: "border-pending/40 bg-pending/10 text-pending",
+};
+
 export function QuickEntryTerminal({ onSubmit }: QuickEntryTerminalProps) {
   const [text, setText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+
+  function focusInput() {
+    // Mantém o foco/cursor no campo de texto após tocar num atalho.
+    requestAnimationFrame(() => inputRef.current?.focus());
+  }
+
+  function appendToInput(fragment: string) {
+    setText((prev) => {
+      const trimmed = prev.trimEnd();
+      const next = trimmed.length ? `${trimmed} ${fragment}` : fragment;
+      return next;
+    });
+    focusInput();
+  }
 
   function send() {
     const trimmed = text.trim();
     if (!trimmed) return;
     onSubmit(trimmed);
     setText("");
-    inputRef.current?.focus();
-  }
-
-  function handleQuickAction(actionText: string) {
-    if (actionText.endsWith(" ")) {
-      setText(actionText);
-      inputRef.current?.focus();
-    } else {
-      onSubmit(actionText);
-    }
+    focusInput();
   }
 
   return (
@@ -35,8 +46,9 @@ export function QuickEntryTerminal({ onSubmit }: QuickEntryTerminalProps) {
         {QUICK_ACTIONS.map((action) => (
           <button
             key={action.label}
-            onClick={() => handleQuickAction(action.text)}
-            className="shrink-0 rounded-full border border-border bg-elevated px-3 py-1.5 text-xs font-medium text-ink active:scale-95 transition-transform"
+            type="button"
+            onClick={() => appendToInput(action.insert)}
+            className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold active:scale-95 transition-transform ${kindClasses[action.kind]}`}
           >
             {action.label}
           </button>
@@ -54,18 +66,18 @@ export function QuickEntryTerminal({ onSubmit }: QuickEntryTerminalProps) {
           ref={inputRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder='Ex: "mais uma de 15 no Diniz paga"'
-          className="h-12 flex-1 rounded-full border border-border bg-elevated px-4 text-[15px] text-ink placeholder:text-muted outline-none focus:border-visor"
+          placeholder='Monte a mensagem: "Diniz 15 pago"'
+          className="h-14 flex-1 rounded-full border border-border bg-elevated px-4 text-[15px] text-ink placeholder:text-muted outline-none focus:border-visor"
           inputMode="text"
           autoComplete="off"
         />
         <button
           type="submit"
-          aria-label="Enviar"
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-visor text-visor-ink active:scale-95 transition-transform disabled:opacity-40"
+          aria-label="Enviar corrida"
+          className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-visor text-visor-ink shadow-card active:scale-95 transition-transform disabled:opacity-40"
           disabled={!text.trim()}
         >
-          <Send size={20} strokeWidth={2.5} />
+          <Rocket size={24} strokeWidth={2.5} />
         </button>
       </form>
     </div>

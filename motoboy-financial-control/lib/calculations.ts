@@ -1,12 +1,5 @@
 import { Ride, DailyRecord } from "@/types";
-import {
-  RESERVA_INICIAL,
-  CUSTO_POR_CORRIDA,
-  TAXA_DIARIA_FIXA,
-  PERCENTUAL_RESERVA,
-  META_DIARIA,
-  META_SEMANAL,
-} from "./constants";
+import { CUSTO_POR_CORRIDA, TAXA_DIARIA_FIXA, PERCENTUAL_RESERVA } from "./constants";
 
 export interface DaySummary {
   bruto: number;
@@ -27,7 +20,8 @@ export function ridesForDay(rides: Ride[], dayKey: string): Ride[] {
 export function summarizeDay(
   rides: Ride[],
   dayKey: string,
-  dailyRecord: DailyRecord | undefined
+  dailyRecord: DailyRecord | undefined,
+  metaDiaria: number
 ): DaySummary {
   const dayRides = ridesForDay(rides, dayKey);
   const gasolina = dailyRecord?.gasolina ?? 0;
@@ -54,12 +48,12 @@ export function summarizeDay(
     guardadoHoje,
     totalCorridas: dayRides.length,
     gasolina,
-    metaBatida: liquido >= META_DIARIA,
+    metaBatida: liquido >= metaDiaria,
   };
 }
 
-export function reservaAcumulada(reservaGuardada: number): number {
-  return RESERVA_INICIAL + reservaGuardada;
+export function reservaAcumulada(reservaBase: number, reservaGuardada: number): number {
+  return reservaBase + reservaGuardada;
 }
 
 export interface WeekSummary {
@@ -72,21 +66,23 @@ export interface WeekSummary {
 export function summarizeWeek(
   rides: Ride[],
   dailyRecords: Record<string, DailyRecord>,
-  weekDayKeys: string[]
+  weekDayKeys: string[],
+  metaDiaria: number,
+  metaSemanal: number
 ): WeekSummary {
   const porDia = weekDayKeys.map((dayKey) => {
-    const s = summarizeDay(rides, dayKey, dailyRecords[dayKey]);
+    const s = summarizeDay(rides, dayKey, dailyRecords[dayKey], metaDiaria);
     return { dayKey, liquido: s.liquido, metaBatida: s.metaBatida };
   });
   const liquidoTotal = porDia.reduce((sum, d) => sum + d.liquido, 0);
   return {
     liquidoTotal,
-    metaSemanalBatida: liquidoTotal >= META_SEMANAL,
-    faltaParaMeta: Math.max(0, META_SEMANAL - liquidoTotal),
+    metaSemanalBatida: liquidoTotal >= metaSemanal,
+    faltaParaMeta: Math.max(0, metaSemanal - liquidoTotal),
     porDia,
   };
 }
 
-export function faltaParaMetaDiaria(liquido: number): number {
-  return Math.max(0, META_DIARIA - liquido);
+export function faltaParaMeta(atual: number, meta: number): number {
+  return Math.max(0, meta - atual);
 }

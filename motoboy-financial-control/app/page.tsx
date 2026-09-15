@@ -9,9 +9,14 @@ import { DailySummary } from "@/components/DailySummary";
 import { WeeklyPerformance } from "@/components/WeeklyPerformance";
 import { Confetti } from "@/components/Confetti";
 import { useAppState } from "@/lib/useAppState";
-import { ridesForDay, summarizeDay, summarizeWeek, reservaAcumulada } from "@/lib/calculations";
+import {
+  ridesForDay,
+  summarizeDay,
+  summarizeWeek,
+  reservaAcumulada,
+  faltaParaMeta,
+} from "@/lib/calculations";
 import { getWeekDayKeys, todayKey, formatCurrency } from "@/lib/dates";
-import { faltaParaMetaDiaria } from "@/lib/calculations";
 
 type Tab = "hoje" | "semana";
 
@@ -26,6 +31,9 @@ export default function Home() {
     editRide,
     deleteRide,
     closeDay,
+    setMetaDiaria,
+    setMetaSemanal,
+    setReservaTotal,
   } = useAppState();
 
   const [tab, setTab] = useState<Tab>("hoje");
@@ -40,9 +48,15 @@ export default function Home() {
 
   const day = todayKey();
   const weekKeys = getWeekDayKeys();
-  const daySummary = summarizeDay(state.rides, day, state.dailyRecords[day]);
-  const weekSummary = summarizeWeek(state.rides, state.dailyRecords, weekKeys);
-  const reserva = reservaAcumulada(state.reservaGuardada);
+  const daySummary = summarizeDay(state.rides, day, state.dailyRecords[day], state.metaDiaria);
+  const weekSummary = summarizeWeek(
+    state.rides,
+    state.dailyRecords,
+    weekKeys,
+    state.metaDiaria,
+    state.metaSemanal
+  );
+  const reserva = reservaAcumulada(state.reservaBase, state.reservaGuardada);
   const dayRides = ridesForDay(state.rides, day);
   const dayClosed = state.dailyRecords[day]?.closed ?? false;
 
@@ -62,6 +76,11 @@ export default function Home() {
         liquidoHoje={daySummary.liquido}
         liquidoSemana={weekSummary.liquidoTotal}
         reserva={reserva}
+        metaDiaria={state.metaDiaria}
+        metaSemanal={state.metaSemanal}
+        onChangeMetaDiaria={setMetaDiaria}
+        onChangeMetaSemanal={setMetaSemanal}
+        onChangeReserva={setReservaTotal}
       />
 
       <main className="flex-1 space-y-4 overflow-y-auto px-4 pb-4 pt-4">
@@ -87,16 +106,22 @@ export default function Home() {
               </div>
             )}
 
+            {/* Corridas do Dia — seção principal, logo abaixo das metas */}
             <section>
               <div className="mb-2 flex items-center justify-between">
-                <h2 className="text-sm font-semibold">Resumo do dia</h2>
+                <h2 className="text-sm font-semibold">Corridas do dia</h2>
                 {!daySummary.metaBatida && (
                   <span className="text-[11px] text-muted">
-                    Faltam {formatCurrency(faltaParaMetaDiaria(daySummary.liquido))} p/ meta
+                    Faltam {formatCurrency(faltaParaMeta(daySummary.liquido, state.metaDiaria))} p/ meta
                   </span>
                 )}
               </div>
-              <DailySummary summary={daySummary} />
+              <RidesTable
+                rides={dayRides}
+                onToggleStatus={toggleRideStatus}
+                onEdit={(id, updates) => editRide(id, updates)}
+                onDelete={deleteRide}
+              />
             </section>
 
             {daySummary.gasolina > 0 && (
@@ -106,23 +131,23 @@ export default function Home() {
               </div>
             )}
 
+            {/* Resumo Financeiro — fica no fundo, abaixo das corridas */}
             <section>
-              <h2 className="mb-2 text-sm font-semibold">Corridas ativas</h2>
-              <RidesTable
-                rides={dayRides}
-                onToggleStatus={toggleRideStatus}
-                onEdit={(id, updates) => editRide(id, updates)}
-                onDelete={deleteRide}
-              />
+              <h2 className="mb-2 text-sm font-semibold">Resumo financeiro</h2>
+              <DailySummary summary={daySummary} />
             </section>
           </>
         ) : (
-          <WeeklyPerformance week={weekSummary} />
+          <WeeklyPerformance
+            week={weekSummary}
+            metaDiaria={state.metaDiaria}
+            metaSemanal={state.metaSemanal}
+          />
         )}
       </main>
 
       {showFeedback && feedback && (
-        <div className="pointer-events-none fixed inset-x-0 bottom-[132px] z-30 flex justify-center px-4">
+        <div className="pointer-events-none fixed inset-x-0 bottom-[140px] z-30 flex justify-center px-4">
           <div
             className={`pointer-events-auto flex items-center gap-2 rounded-full border px-3 py-2 text-xs shadow-card ${
               feedback.ok
