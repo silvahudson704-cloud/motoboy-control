@@ -32,6 +32,8 @@ export interface AppState {
   reservaGuardada: number; // soma acumulada de todos os 10% guardados (nunca reseta)
   metaDiaria: number; // editável em tela, padrão R$ 200
   metaSemanal: number; // editável em tela, padrão R$ 1.200
+  weekStartDay: number; // 0=Domingo...6=Sábado — dia em que a semana de trabalho começa
+  workDaysCount: number; // quantos dias seguidos a semana de trabalho tem
   history: HistoryEntry[];
 }
 

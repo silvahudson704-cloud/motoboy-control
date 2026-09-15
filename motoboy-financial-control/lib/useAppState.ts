@@ -116,6 +116,25 @@ export function useAppState() {
     });
   }, []);
 
+  // Edição direta: define o valor total da gasolina do dia (substitui, não soma).
+  const setGasolinaTotal = useCallback((valor: number) => {
+    const day = todayKey();
+    setState((prev) => {
+      const existing = prev.dailyRecords[day];
+      return {
+        ...prev,
+        dailyRecords: {
+          ...prev.dailyRecords,
+          [day]: {
+            dayKey: day,
+            gasolina: valor,
+            closed: existing?.closed ?? false,
+          },
+        },
+      };
+    });
+  }, []);
+
   const closeDay = useCallback(() => {
     const day = todayKey();
     setState((prev) => ({
@@ -130,6 +149,28 @@ export function useAppState() {
         },
       },
     }));
+  }, []);
+
+  // Botão de fechamento do dia funciona como um interruptor: fecha e,
+  // se tocado de novo, reabre (caso precise lançar mais alguma corrida).
+  const toggleDayClosed = useCallback(() => {
+    const day = todayKey();
+    setState((prev) => {
+      const existing = prev.dailyRecords[day];
+      const nowClosed = !(existing?.closed ?? false);
+      return {
+        ...prev,
+        dailyRecords: {
+          ...prev.dailyRecords,
+          [day]: {
+            dayKey: day,
+            gasolina: existing?.gasolina ?? 0,
+            closed: nowClosed,
+            closedAt: nowClosed ? new Date().toISOString() : undefined,
+          },
+        },
+      };
+    });
   }, []);
 
   const toggleRideStatus = useCallback((rideId: string) => {
@@ -248,6 +289,15 @@ export function useAppState() {
     setState((prev) => ({ ...prev, reservaBase: novoTotal - prev.reservaGuardada }));
   }, []);
 
+  // Preferência de dias trabalhados — cada motoboy folga num dia diferente.
+  const setWeekStartDay = useCallback((day: number) => {
+    setState((prev) => ({ ...prev, weekStartDay: day }));
+  }, []);
+
+  const setWorkDaysCount = useCallback((count: number) => {
+    setState((prev) => ({ ...prev, workDaysCount: count }));
+  }, []);
+
   return {
     state,
     feedback,
@@ -258,8 +308,12 @@ export function useAppState() {
     editRide,
     deleteRide,
     closeDay,
+    toggleDayClosed,
+    setGasolinaTotal,
     setMetaDiaria,
     setMetaSemanal,
     setReservaTotal,
+    setWeekStartDay,
+    setWorkDaysCount,
   };
 }

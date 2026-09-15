@@ -1,5 +1,12 @@
 import { AppState } from "@/types";
-import { STORAGE_KEY, DEFAULT_RESERVA_BASE, DEFAULT_META_DIARIA, DEFAULT_META_SEMANAL } from "./constants";
+import {
+  STORAGE_KEY,
+  DEFAULT_RESERVA_BASE,
+  DEFAULT_META_DIARIA,
+  DEFAULT_META_SEMANAL,
+  DEFAULT_WEEK_START_DAY,
+  DEFAULT_WORK_DAYS_COUNT,
+} from "./constants";
 
 export const emptyState: AppState = {
   rides: [],
@@ -8,6 +15,8 @@ export const emptyState: AppState = {
   reservaGuardada: 0,
   metaDiaria: DEFAULT_META_DIARIA,
   metaSemanal: DEFAULT_META_SEMANAL,
+  weekStartDay: DEFAULT_WEEK_START_DAY,
+  workDaysCount: DEFAULT_WORK_DAYS_COUNT,
   history: [],
 };
 
@@ -24,6 +33,8 @@ export function loadState(): AppState {
       reservaGuardada: parsed.reservaGuardada ?? 0,
       metaDiaria: parsed.metaDiaria ?? DEFAULT_META_DIARIA,
       metaSemanal: parsed.metaSemanal ?? DEFAULT_META_SEMANAL,
+      weekStartDay: parsed.weekStartDay ?? DEFAULT_WEEK_START_DAY,
+      workDaysCount: parsed.workDaysCount ?? DEFAULT_WORK_DAYS_COUNT,
       history: parsed.history ?? [],
     };
   } catch (err) {

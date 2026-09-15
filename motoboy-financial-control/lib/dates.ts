@@ -1,3 +1,5 @@
+import { FULL_DAY_LABELS } from "./constants";
+
 // Todas as funções operam em horário local do dispositivo.
 
 export function todayKey(date: Date = new Date()): string {
@@ -15,23 +17,28 @@ export function keyToDate(dayKey: string): Date {
 }
 
 /**
- * A semana operacional do motoboy começa na Terça-feira e termina no Domingo.
- * Retorna a Terça-feira (início) correspondente à semana que contém `date`.
+ * A semana operacional é configurável (dia de início + quantidade de dias
+ * trabalhados), já que cada motoboy folga em dias diferentes.
+ * weekStartDay segue o padrão do JS: 0=Domingo...6=Sábado.
  */
-export function getWeekStart(date: Date = new Date()): Date {
+export function getWeekStart(date: Date = new Date(), weekStartDay: number = 2): Date {
   const d = new Date(date);
   d.setHours(0, 0, 0, 0);
-  const day = d.getDay(); // 0 = Domingo ... 2 = Terça ... 6 = Sábado
-  const diff = (day - 2 + 7) % 7; // dias desde a última terça
+  const day = d.getDay();
+  const diff = (day - weekStartDay + 7) % 7;
   const start = new Date(d);
   start.setDate(d.getDate() - diff);
   return start;
 }
 
-export function getWeekDayKeys(date: Date = new Date()): string[] {
-  const start = getWeekStart(date);
+export function getWeekDayKeys(
+  date: Date = new Date(),
+  weekStartDay: number = 2,
+  workDaysCount: number = 6
+): string[] {
+  const start = getWeekStart(date, weekStartDay);
   const keys: string[] = [];
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < workDaysCount; i++) {
     const d = new Date(start);
     d.setDate(start.getDate() + i);
     keys.push(todayKey(d));
@@ -39,8 +46,17 @@ export function getWeekDayKeys(date: Date = new Date()): string[] {
   return keys;
 }
 
-export function isDayInCurrentWeek(dayKey: string, date: Date = new Date()): boolean {
-  return getWeekDayKeys(date).includes(dayKey);
+export function weekDayLabels(weekStartDay: number, workDaysCount: number): string[] {
+  return Array.from({ length: workDaysCount }, (_, i) => FULL_DAY_LABELS[(weekStartDay + i) % 7]);
+}
+
+export function isDayInCurrentWeek(
+  dayKey: string,
+  date: Date = new Date(),
+  weekStartDay: number = 2,
+  workDaysCount: number = 6
+): boolean {
+  return getWeekDayKeys(date, weekStartDay, workDaysCount).includes(dayKey);
 }
 
 export function formatCurrency(value: number): string {

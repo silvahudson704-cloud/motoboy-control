@@ -3,21 +3,26 @@ export const DEFAULT_RESERVA_BASE = 216.24;
 export const DEFAULT_META_DIARIA = 200;
 export const DEFAULT_META_SEMANAL = 1200;
 
-export const CUSTO_POR_CORRIDA = 1.5;
-export const TAXA_DIARIA_FIXA = 2.5;
-export const PERCENTUAL_RESERVA = 0.1;
-
-export const STORAGE_KEY = "motoboy-financial-control:v2";
-
-// A semana de trabalho vai de Terça a Domingo.
-export const WEEK_DAY_LABELS = [
+// Semana de trabalho editável: por padrão começa na Terça (índice 2,
+// no mesmo padrão do JS: 0=Domingo...6=Sábado) e dura 6 dias (Ter-Dom).
+export const DEFAULT_WEEK_START_DAY = 2;
+export const DEFAULT_WORK_DAYS_COUNT = 6;
+export const FULL_DAY_LABELS = [
+  "Domingo",
+  "Segunda",
   "Terça",
   "Quarta",
   "Quinta",
   "Sexta",
   "Sábado",
-  "Domingo",
 ] as const;
+
+export const CUSTO_POR_CORRIDA = 1.5;
+export const TAXA_DIARIA_FIXA = 2.5;
+export const PERCENTUAL_RESERVA = 0.1;
+
+export const STORAGE_KEY = "motoboy-financial-control:v3";
+export const THEME_STORAGE_KEY = "motoboy-financial-control:theme";
 
 // Botões rápidos: NUNCA enviam a corrida sozinhos — só concatenam texto
 // no campo de entrada. O envio só acontece no botão de foguete (🚀).

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, JetBrains_Mono } from "next/font/google";
+import { THEME_STORAGE_KEY } from "@/lib/constants";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -36,6 +37,15 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR" className={`${manrope.variable} ${jbMono.variable}`}>
+      <head>
+        <script
+          // Aplica o tema salvo antes da página pintar, evitando um "flash"
+          // de tema errado ao abrir o app.
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('${THEME_STORAGE_KEY}');if(t==='light'){document.documentElement.classList.add('light');}}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="font-sans bg-base text-ink antialiased">{children}</body>
     </html>
   );

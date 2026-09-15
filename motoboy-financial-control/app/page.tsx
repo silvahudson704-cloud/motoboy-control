@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, XCircle, Fuel, Lock } from "lucide-react";
+import { CheckCircle2, XCircle, Lock, LockOpen } from "lucide-react";
 import { Header } from "@/components/Header";
 import { QuickEntryTerminal } from "@/components/QuickEntryTerminal";
 import { RidesTable } from "@/components/RidesTable";
 import { DailySummary } from "@/components/DailySummary";
 import { WeeklyPerformance } from "@/components/WeeklyPerformance";
+import { EditableAmount } from "@/components/EditableAmount";
+import { SettingsSheet } from "@/components/SettingsSheet";
 import { Confetti } from "@/components/Confetti";
 import { useAppState } from "@/lib/useAppState";
+import { useTheme } from "@/lib/useTheme";
 import {
   ridesForDay,
   summarizeDay,
@@ -16,7 +19,7 @@ import {
   reservaAcumulada,
   faltaParaMeta,
 } from "@/lib/calculations";
-import { getWeekDayKeys, todayKey, formatCurrency } from "@/lib/dates";
+import { getWeekDayKeys, weekDayLabels, todayKey, formatCurrency } from "@/lib/dates";
 
 type Tab = "hoje" | "semana";
 
@@ -31,13 +34,19 @@ export default function Home() {
     editRide,
     deleteRide,
     closeDay,
+    toggleDayClosed,
+    setGasolinaTotal,
     setMetaDiaria,
     setMetaSemanal,
     setReservaTotal,
+    setWeekStartDay,
+    setWorkDaysCount,
   } = useAppState();
 
+  const { theme, setTheme } = useTheme();
   const [tab, setTab] = useState<Tab>("hoje");
   const [showFeedback, setShowFeedback] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   useEffect(() => {
     if (!feedback) return;
@@ -47,7 +56,8 @@ export default function Home() {
   }, [feedback]);
 
   const day = todayKey();
-  const weekKeys = getWeekDayKeys();
+  const weekKeys = getWeekDayKeys(new Date(), state.weekStartDay, state.workDaysCount);
+  const dayLabels = weekDayLabels(state.weekStartDay, state.workDaysCount);
   const daySummary = summarizeDay(state.rides, day, state.dailyRecords[day], state.metaDiaria);
   const weekSummary = summarizeWeek(
     state.rides,
@@ -81,6 +91,7 @@ export default function Home() {
         onChangeMetaDiaria={setMetaDiaria}
         onChangeMetaSemanal={setMetaSemanal}
         onChangeReserva={setReservaTotal}
+        onOpenSettings={() => setSettingsOpen(true)}
       />
 
       <main className="flex-1 space-y-4 overflow-y-auto px-4 pb-4 pt-4">
@@ -124,12 +135,29 @@ export default function Home() {
               />
             </section>
 
-            {daySummary.gasolina > 0 && (
-              <div className="flex items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2 text-xs text-muted">
-                <Fuel size={14} className="text-pending" />
-                Gasolina hoje: <span className="font-mono text-ink">{formatCurrency(daySummary.gasolina)}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-2.5">
+              <EditableAmount
+                label="Gasolina hoje"
+                value={daySummary.gasolina}
+                onChange={setGasolinaTotal}
+                tone="pending"
+                className="flex-1 !min-w-0"
+              />
+              <button
+                onClick={toggleDayClosed}
+                className={`flex h-full flex-1 flex-col items-center justify-center gap-1 rounded-2xl border px-3 py-2 shadow-card active:scale-95 transition-transform ${
+                  dayClosed
+                    ? "border-paid/40 bg-paid/10 text-paid"
+                    : "border-visor bg-visor text-visor-ink"
+                }`}
+              >
+                <span className="flex items-center gap-1.5 text-xs font-bold">
+                  {dayClosed ? <LockOpen size={14} /> : <Lock size={14} />}
+                  {dayClosed ? "Dia fechado" : "Fechar dia"}
+                </span>
+                {dayClosed && <span className="text-[10px] opacity-80">toque p/ reabrir</span>}
+              </button>
+            </div>
 
             {/* Resumo Financeiro — fica no fundo, abaixo das corridas */}
             <section>
@@ -142,6 +170,7 @@ export default function Home() {
             week={weekSummary}
             metaDiaria={state.metaDiaria}
             metaSemanal={state.metaSemanal}
+            dayLabels={dayLabels}
           />
         )}
       </main>
@@ -166,6 +195,17 @@ export default function Home() {
       )}
 
       <QuickEntryTerminal onSubmit={handleSubmit} />
+
+      <SettingsSheet
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        theme={theme}
+        onChangeTheme={setTheme}
+        weekStartDay={state.weekStartDay}
+        workDaysCount={state.workDaysCount}
+        onChangeWeekStartDay={setWeekStartDay}
+        onChangeWorkDaysCount={setWorkDaysCount}
+      />
 
       <Confetti active={celebrate} onDone={dismissCelebration} />
     </div>

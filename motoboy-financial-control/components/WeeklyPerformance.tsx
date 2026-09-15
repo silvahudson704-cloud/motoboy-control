@@ -2,16 +2,16 @@
 
 import { Check, X } from "lucide-react";
 import { WeekSummary } from "@/lib/calculations";
-import { WEEK_DAY_LABELS } from "@/lib/constants";
 import { formatCurrency, formatShortDate, todayKey } from "@/lib/dates";
 
 interface WeeklyPerformanceProps {
   week: WeekSummary;
   metaDiaria: number;
   metaSemanal: number;
+  dayLabels: string[];
 }
 
-export function WeeklyPerformance({ week, metaDiaria, metaSemanal }: WeeklyPerformanceProps) {
+export function WeeklyPerformance({ week, metaDiaria, metaSemanal, dayLabels }: WeeklyPerformanceProps) {
   const today = todayKey();
 
   return (
@@ -40,7 +40,7 @@ export function WeeklyPerformance({ week, metaDiaria, metaSemanal }: WeeklyPerfo
             >
               <span className="flex items-center gap-2">
                 <span className={isToday ? "font-semibold text-visor" : ""}>
-                  {WEEK_DAY_LABELS[i]}
+                  {dayLabels[i]}
                 </span>
                 <span className="text-[10px] text-muted">{formatShortDate(dia.dayKey)}</span>
               </span>

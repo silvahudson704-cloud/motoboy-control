@@ -5,17 +5,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        base: "#0A0A0B", // preto grafite, alto contraste
-        surface: "#151517",
-        elevated: "#1E1E21",
-        border: "#2F2F33",
-        ink: "#FAFAFA",
-        muted: "#9A9AA0",
-        visor: "#FFD60A", // dourado/amarelo neon — cor de marca / ação primária
-        "visor-ink": "#1A1400",
-        paid: "#39E37B",
-        pending: "#FF9F3D",
-        cost: "#FF5C5C",
+        base: "rgb(var(--color-base) / <alpha-value>)",
+        surface: "rgb(var(--color-surface) / <alpha-value>)",
+        elevated: "rgb(var(--color-elevated) / <alpha-value>)",
+        border: "rgb(var(--color-border) / <alpha-value>)",
+        ink: "rgb(var(--color-ink) / <alpha-value>)",
+        muted: "rgb(var(--color-muted) / <alpha-value>)",
+        visor: "rgb(var(--color-visor) / <alpha-value>)",
+        "visor-ink": "rgb(var(--color-visor-ink) / <alpha-value>)",
+        paid: "rgb(var(--color-paid) / <alpha-value>)",
+        pending: "rgb(var(--color-pending) / <alpha-value>)",
+        cost: "rgb(var(--color-cost) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["var(--font-manrope)", "system-ui", "sans-serif"],

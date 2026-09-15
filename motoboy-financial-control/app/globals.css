@@ -2,17 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Modo noturno (padrão) — preto/grafite com dourado neon.
+     Valores em "R G B" (sem vírgula) para funcionar com o modificador
+     de opacidade do Tailwind, ex: bg-visor/40. */
+  --color-base: 10 10 11;
+  --color-surface: 21 21 23;
+  --color-elevated: 30 30 33;
+  --color-border: 47 47 51;
+  --color-ink: 250 250 250;
+  --color-muted: 154 154 160;
+  --color-visor: 255 214 10;
+  --color-visor-ink: 26 20 0;
+  --color-paid: 57 227 123;
+  --color-pending: 255 159 61;
+  --color-cost: 255 92 92;
+}
+
+.light {
+  /* Modo diurno — fundo claro, dourado mais fechado pra manter contraste. */
+  --color-base: 246 247 248;
+  --color-surface: 255 255 255;
+  --color-elevated: 241 242 244;
+  --color-border: 222 224 228;
+  --color-ink: 17 19 23;
+  --color-muted: 100 106 115;
+  --color-visor: 217 119 6;
+  --color-visor-ink: 255 255 255;
+  --color-paid: 22 163 74;
+  --color-pending: 234 88 12;
+  --color-cost: 220 38 38;
+}
+
 html,
 body {
-  background-color: #0b0f14;
-  color: #f4f7fa;
   overscroll-behavior-y: contain;
   -webkit-tap-highlight-color: transparent;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2a343f transparent;
+  scrollbar-color: rgb(var(--color-border)) transparent;
 }
 
 .tabular {
