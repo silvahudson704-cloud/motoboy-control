@@ -1,0 +1,11 @@
+{
+  "name": "Motoboy Financial Control",
+  "short_name": "Financeiro",
+  "description": "Controle financeiro para motoboys, direto do bolso.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B0F14",
+  "theme_color": "#0B0F14",
+  "icons": []
+}
